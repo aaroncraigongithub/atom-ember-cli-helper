@@ -130,20 +130,23 @@ class EmberCliHelperView extends View
 
     # script to template
     if extension == '.coffee' || extension == '.js'
-      newFileName = fileName.replace(/\.(js|coffee)$/, '.hbs')
+      newHbsName = fileName.replace(/\.(js|coffee)$/, '.hbs')
+      newEmblemName = fileName.replace(/\.(js|coffee)$/, '.emblem')
+      newEmName = fileName.replace(/\.(js|coffee)$/, '.em')
+      newFileNames = [newHbsName, newEmblemName, newEmName]
 
       # components/*.js -> templates/components/*.hbs
       if paths[0] == 'components'
-        goodPaths.push ["templates"].concat(paths).concat([newFileName]).join(separator)
+        goodPaths.push ["templates"].concat(paths).concat(newFileNames).join(separator)
 
       # controllers/*.js -> templates/*.hbs
       # routes/*.js -> templates/*.hbs
       else if paths[0] == 'controllers' || paths[0] == 'routes'
         paths.shift()
-        goodPaths.push ["templates"].concat(paths).concat([newFileName]).join(separator)
+        goodPaths.push ["templates"].concat(paths).concat(newFileNames).join(separator)
 
     # template to script
-    else if extension == '.hbs'
+    else if extension == '.hbs' || extension == '.emblem' || extension == '.em'
       newFileNameJs = fileName.replace(/\.hbs$/, '.js')
       newFileNameCoffee = fileName.replace(/\.hbs$/, '.coffee')
 
@@ -186,7 +189,7 @@ class EmberCliHelperView extends View
         goodPaths.push ["routes"].concat(paths).concat([newFileNameCoffee]).join(separator)
 
     # template to script
-    else if extension == '.hbs'
+    else if extension == '.hbs' || extension == '.emblem' || extension == '.em'
       # templates/(!components/)*.hbs -> routes/*.js
       if paths[0] == 'templates' && paths[1] != 'components'
         paths.shift()
@@ -214,8 +217,10 @@ class EmberCliHelperView extends View
     componentName = line.split(/[^A-Za-z0-9\/\-_]/)[0]
 
     if componentName && componentName.indexOf('-') > 0
-      templateName = "templates/components/"+componentName.replace('/', separator)+".hbs"
-      @openBestMatch(pathUntilApp, [templateName])
+      hbsName = "templates/components/"+componentName.replace('/', separator)+".hbs"
+      emblemName = "templates/components/"+componentName.replace('/', separator)+".emblem"
+      emName = "templates/components/"+componentName.replace('/', separator)+".em"
+      @openBestMatch(pathUntilApp, [hbsName, emblemName, emName])
 
 
   openBestMatch: (pathUntilApp, goodPaths) ->
